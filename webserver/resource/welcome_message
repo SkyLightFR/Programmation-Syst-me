@@ -4,3 +4,4 @@ Il est développé en C par Benjamin Chevalier et Florian Crosnier dans le cadre
 The Tiny Successful Server est distribué sous licence GNU GPLv2.0. Actuellement, son objectif est purement pédagogique. Même si cela peut paraître extrêmement intéressant, logique et fabuleux, il n'est PAS recommendé d'utiliser TTS Server dans un environnement de production.
 
 Ce message de bienvenue peut être édité dans le fichier resource/welcome_message.
+
