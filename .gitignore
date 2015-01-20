@@ -32,5 +32,6 @@ TTS-Server
 # Temp files
 *~
 *.swp
-
+*.c#
+.#*
 *.dep
