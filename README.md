@@ -1,3 +1,6 @@
-# The Tiny Successful Server
-TP Programmation Système N4
+The Tiny Successful Server
+=============
 
+HOW TO COMPILE
+-----------
+$ make
