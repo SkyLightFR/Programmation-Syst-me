@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <errno.h>
@@ -9,14 +11,17 @@
 #include "socket.h"
 
 int main(int argc, char **argv) {
+  int client_socket;
+  int welcome_fd;
+  struct stat welcome_stat;
+  char *welcome_msg = "";
+  char client_message[100];
+
   if(argc == 0) {
     perror("No argument");
   }
 
-
   int server_socket = creer_serveur(atoi(argv[1]));
-  int client_socket;
-  char client_message[100];
   while(1) {
 
     client_socket = accept(server_socket, NULL, NULL);
@@ -24,12 +29,15 @@ int main(int argc, char **argv) {
       perror("accept");
     }
     sleep(1);
-    const char *welcome_message = "Hello ! Welcome on my server! \n Ceci est un nouveau serveur créer par Crosnier Florian et Chevalier Benjamin. \n Il est distribué sous la license GNU GPL V2.0 et a été développé dans le cadre du cours ASR4-Programmation Système.\n\n";
-    write(client_socket, welcome_message, strlen(welcome_message));
+
+    welcome_fd = open("resource/welcome_message", O_RDONLY);
+    fstat(welcome_fd, &welcome_stat);
+    read(welcome_fd, (void *)welcome_msg, welcome_stat.st_size);
+    write(client_socket, welcome_msg, strlen(welcome_msg));
   
     while(1) {
-    int lg = read(client_socket, client_message,100);
-    write(client_socket, client_message,lg);
+        int lg = read(client_socket, client_message,100);
+        write(client_socket, client_message,lg);
     }
   }
   return 0;
