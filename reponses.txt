@@ -1,0 +1,6 @@
+I - Premier serveur TCP
+
+	1) Lorsque deux clients se connectent, le deuxième client ne reçoit pas le message de bienvenue du serveur
+	2) Le message de bienvenue s'affiche 1s plus tard
+	3) En lançant la commande, on obtient l'erreur "Unable to connect to remote host: Connection refused" parce que le serveur ne peut répondre que sur un serveur ipv4
+	4) Le serveur se lance sans aucune erreur
