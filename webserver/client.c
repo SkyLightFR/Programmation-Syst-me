@@ -24,7 +24,7 @@ int create_client_socket(int server_socket) {
 int client_treatment(int client_socket) {
     int welcome_fd;
     struct stat welcome_stat;
-    char *welcome_msg = malloc(1024);
+    char *welcome_msg = malloc(2048);
     char *client_message = malloc(MAX_MSG_LENGTH);
     const char *welcomeerr = "Could not read welcome file\n";
 
