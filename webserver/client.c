@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <ctype.h>
+#include <string.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -9,28 +9,25 @@
 
 #define MAX_MSG_LENGTH 255
 
-int client_socket;
-int welcome_fd;
-struct stat welcome_stat;
-char *welcome_msg = malloc(1024);
-char *client_message = malloc(MAX_MSG_LENGTH);
-const char *welcomeerr = "Could not read welcome file\n";
-const char *paramerr = " : invalid parameters\nusage : TTS-Server <listen_port>\n";
 
 int create_client_socket(int server_socket) {
-    while(1) {
+    int client_socket;
         client_socket = accept(server_socket, NULL, NULL);
         if (client_socket == -1) {
             perror("accept");
         }
-        close(server_socket);
         sleep(1);
-    }
 
     return client_socket;
 }
 
-int client_treatment() {
+int client_treatment(int client_socket) {
+    int welcome_fd;
+    struct stat welcome_stat;
+    char *welcome_msg = malloc(1024);
+    char *client_message = malloc(MAX_MSG_LENGTH);
+    const char *welcomeerr = "Could not read welcome file\n";
+
     /* Fetch content of resource/welcome_message and print it */
     welcome_fd = open("resource/welcome_message", O_RDONLY);
     if (welcome_fd == -1) {
@@ -55,7 +52,7 @@ int client_treatment() {
 
     /* Echo everything the client sends */
     while(1) {
-        int lg = read(client_socket, client_message, MAX_MSG_LENGTH);
+        int lg = recv(client_socket, client_message, MAX_MSG_LENGTH, 0);
         write(client_socket, client_message, lg);
     }
     free(client_message);
