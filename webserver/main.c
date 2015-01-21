@@ -11,8 +11,7 @@
 #include <arpa/inet.h>
 
 #include "socket.h"
-
-#define MAX_MSG_LENGTH 255
+#include "client.h"
 
 int main(int argc, char **argv) {
     int client_socket;
@@ -21,8 +20,6 @@ int main(int argc, char **argv) {
     struct stat welcome_stat;
     char welcome_msg[1024];
     char client_message[MAX_MSG_LENGTH];
-    const char *welcomeerr = "Could not read welcome file\n";
-    const char *paramerr = " : invalid parameters\nusage : TTS-Server <listen_port>\n";
 
     /* Check parameters */
 
