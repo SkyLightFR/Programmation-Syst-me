@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
         }
         sleep(1);
 
-        /* Fetch content of resource/welcom_message and print it */
+        /* Fetch content of resource/welcome_message and print it */
 
         welcome_fd = open("resource/welcome_message", O_RDONLY);
         if (welcome_fd == -1) {
