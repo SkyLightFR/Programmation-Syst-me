@@ -51,10 +51,11 @@ int client_treatment(int client_socket) {
     }
 
     /* Echo everything the client sends */
-    while(1) {
-        int lg = recv(client_socket, client_message, MAX_MSG_LENGTH, 0);
-        if (strstr(client_message, "END.") != NULL) break;
+    int lg = recv(client_socket, client_message, MAX_MSG_LENGTH, 0);
+    while(strlen(client_message) > 0) {
+        if (strstr(client_message, "END.") == client_message) break;
         write(client_socket, client_message, lg);
+        lg = recv(client_socket, client_message, MAX_MSG_LENGTH, 0);
     }
     free(client_message);
 
