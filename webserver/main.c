@@ -11,7 +11,6 @@ int main(int argc, char **argv) {
     const char *paramerr = " : invalid parameters\nusage : TTS-Server <listen_port>\n";
 
     /* Check parameters */
-
     if (argc == 2) {
         port = atoi(argv[1]);
         if (port < 0 || port > 65535) {
@@ -31,9 +30,8 @@ int main(int argc, char **argv) {
 
     while (1) {
         client_socket = create_client_socket(server_socket);
-        while (1) {
-            client_treatment(client_socket);
-        }
+        client_treatment(client_socket);
+        close(client_socket);
     }
 
     return 0;
