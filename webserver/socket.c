@@ -45,8 +45,21 @@ int create_server(int port) {
     return server_socket;
 } 
 
+void signal_treatment(int sig) {
+    printf("Received signal %d\n", sig);
+}
+
 void signal_init(void) {
-  if(signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
-    perror("signal");
-  }
+    if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
+        perror("signal");
+    }
+
+    struct sigaction sa;
+    sa.sa_handler = signal_treatment;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART;
+
+    if (sigaction(SIGCHLD, &sa, NULL) == -1) {
+        perror ("sigaction(SIGCHLD)");
+    }
 }

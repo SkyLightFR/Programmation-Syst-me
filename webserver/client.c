@@ -11,8 +11,9 @@
 
 int client_treatment(int client_socket) {
     int welcome_fd;
+    int recv_len;
     struct stat welcome_stat;
-    char *welcome_msg = malloc(2048);
+    char welcome_msg[1500];
     char *client_message = malloc(MAX_MSG_LENGTH);
     const char *welcomeerr = "Could not read welcome file\n";
 
@@ -35,14 +36,11 @@ int client_treatment(int client_socket) {
         if (write(client_socket, welcome_msg, strlen(welcome_msg)) == -1) {
             perror("write welcome_message");
         }
-        free(welcome_msg);
     }
 
     /* Echo everything the client sends */
-    int lg = recv(client_socket, client_message, MAX_MSG_LENGTH, 0);
-    while(strlen(client_message) > 0) {
-        write(client_socket, client_message, lg);
-        lg = recv(client_socket, client_message, MAX_MSG_LENGTH, 0);
+    while ((recv_len = recv(client_socket, client_message, MAX_MSG_LENGTH, 0)) > 0) {
+        write(client_socket, client_message, recv_len);
     }
     free(client_message);
 
@@ -54,10 +52,12 @@ int create_client_socket(int server_socket) {
     client_socket = accept(server_socket, NULL, NULL);
     if (client_socket == -1) {
         perror("accept");
+        return -1;
     }
 
     if (fork() == -1) {
         perror("fork");
+        return -1;
     } else if (fork() == 0) {
         sleep(1);
         if (client_treatment(client_socket) == -1) {
