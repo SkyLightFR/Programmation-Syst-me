@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
 #include "socket.h"
 #include "client.h"
 
@@ -27,6 +26,8 @@ int main(int argc, char **argv) {
         printf("%s : unable to start : failed to create server socket\n", argv[0]);
         return -1;
     }
+
+    signal_init();
 
     while (1) {
         client_socket = create_client_socket(server_socket);

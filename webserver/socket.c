@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
 
 int create_server(int port) {
     int server_socket;
@@ -43,3 +44,9 @@ int create_server(int port) {
 
     return server_socket;
 } 
+
+void signal_init(void) {
+  if(signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
+    perror("signal");
+  }
+}
