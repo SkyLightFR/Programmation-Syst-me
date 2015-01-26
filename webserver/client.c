@@ -9,18 +9,6 @@
 
 #define MAX_MSG_LENGTH 255
 
-
-int create_client_socket(int server_socket) {
-    int client_socket;
-        client_socket = accept(server_socket, NULL, NULL);
-        if (client_socket == -1) {
-            perror("accept");
-        }
-        sleep(1);
-
-    return client_socket;
-}
-
 int client_treatment(int client_socket) {
     int welcome_fd;
     struct stat welcome_stat;
@@ -53,11 +41,30 @@ int client_treatment(int client_socket) {
     /* Echo everything the client sends */
     int lg = recv(client_socket, client_message, MAX_MSG_LENGTH, 0);
     while(strlen(client_message) > 0) {
-        if (strstr(client_message, "END.") == client_message) break;
         write(client_socket, client_message, lg);
         lg = recv(client_socket, client_message, MAX_MSG_LENGTH, 0);
     }
     free(client_message);
 
     return 0;
+}
+
+int create_client_socket(int server_socket) {
+    int client_socket;
+    client_socket = accept(server_socket, NULL, NULL);
+    if (client_socket == -1) {
+        perror("accept");
+    }
+
+    if (fork() == -1) {
+        perror("fork");
+    } else if (fork() == 0) {
+        sleep(1);
+        if (client_treatment(client_socket) == -1) {
+            printf("Could not start client treatment");
+        }
+    }
+    close(client_socket);
+
+    return client_socket;
 }

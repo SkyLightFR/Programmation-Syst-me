@@ -4,10 +4,8 @@ Il est développé en C par Benjamin Chevalier et Florian Crosnier dans le cadre
 The Tiny Successful Server est distribué sous licence GNU GPLv2.0. Actuellement, son objectif est purement pédagogique. Même si cela peut paraître extrêmement intéressant, logique et fabuleux, il n'est PAS recommendé d'utiliser TTS Server dans un environnement de production.
 
 Si vous souhaitez recevoir le message 'bonjour', tapez 'bonjour'. Si vous souhaitez recevoir le message 'bonsoir', tapez 'bonsoir'. Si vous souhaitez recevoir le message "franchement, ce sujet de TP est vraiment super sympa, j'aurais pas pu rêver mieux !", je pense que vous aurez deviné comment faire.
-Si vous êtes du genre à faire les choses bien, vous avez le droit d'écrire 'END.' pour fermer la connexion avec le serveur. Mais ça me rendrait triste de vous voir partir si vite ! :-(
 
 Pour votre santé, pensez à manger 5 sockets et pointeurs par heure ! 
-
 Ceci est un message du ministère des mallocs.
  
 Ce message de bienvenue peut être édité dans le fichier resource/welcome_message.

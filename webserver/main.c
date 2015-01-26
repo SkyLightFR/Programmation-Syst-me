@@ -5,7 +5,6 @@
 #include "client.h"
 
 int main(int argc, char **argv) {
-    int client_socket;
     int port;
     const char *paramerr = " : invalid parameters\nusage : TTS-Server <listen_port>\n";
 
@@ -30,9 +29,7 @@ int main(int argc, char **argv) {
     signal_init();
 
     while (1) {
-        client_socket = create_client_socket(server_socket);
-        client_treatment(client_socket);
-        close(client_socket);
+        create_client_socket(server_socket);
     }
 
     return 0;
