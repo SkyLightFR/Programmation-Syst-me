@@ -16,6 +16,14 @@ int create_server(int port) {
         perror("socket");
     }
 
+    /* Enable SO_REUSEADDR */
+    
+    int optval = 1;
+
+    if(setsockopt(server_socket,SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) == -1) {
+      perror("Can not set SO_REUSEADR option");
+    }
+    
     /* Binding Socket */
 
     struct sockaddr_in saddr;
