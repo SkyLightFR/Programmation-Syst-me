@@ -40,11 +40,14 @@ int client_treatment(int client_socket) {
 
     /* Echo everything the client sends */
     while ((recv_len = recv(client_socket, client_message, MAX_MSG_LENGTH, 0)) > 0) {
-        write(client_socket, client_message, recv_len);
+        if (send(client_socket, client_message, recv_len, 0) < 0) {
+            perror("send");
+            return -1;
+        }
     }
     free(client_message);
 
-    return 0;
+    exit(0);
 }
 
 int create_client_socket(int server_socket) {
@@ -66,5 +69,5 @@ int create_client_socket(int server_socket) {
     }
     close(client_socket);
 
-    return client_socket;
+    return 0;
 }
