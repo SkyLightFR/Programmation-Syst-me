@@ -1,4 +1,5 @@
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <stdio.h>
@@ -46,7 +47,11 @@ int create_server(int port) {
 } 
 
 void signal_treatment(int sig) {
-    printf("Received signal %d\n", sig);
+    if (sig == SIGCHLD) {
+        if (waitpid(-1, NULL, 0) == -1) {
+            perror("waitpid");
+        }
+    }
 }
 
 void signal_init(void) {
