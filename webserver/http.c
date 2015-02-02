@@ -8,12 +8,11 @@ int parser(const char *request) {
     int words = 1;
 
     while (i < strlen(request)) {
-        if (strcmp(request, " ")) {
+        if (request[i] == ' ') {
             ++words;
         }
         ++i;
     }
-    printf("%d mots\ntaille : %ld", words, strlen(request));
 
     if (words == 3) {
         return 0;
