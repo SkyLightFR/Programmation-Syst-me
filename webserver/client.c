@@ -6,15 +6,16 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include "http.h"
 
 #define MAX_MSG_LENGTH 255
 
 int client_treatment(int client_socket) {
-    int welcome_fd;
     FILE *client = fdopen(client_socket, "w+");
+    char client_message[MAX_MSG_LENGTH];
+    int welcome_fd;
     struct stat welcome_stat;
     char welcome_msg[1500];
-    char *client_message = malloc(MAX_MSG_LENGTH);
     const char *welcomeerr = "Could not read welcome file\n";
     const char *server_message = "<TTS-SERVER> %s";
 
@@ -40,13 +41,15 @@ int client_treatment(int client_socket) {
     }
 
     /* Echo everything the client sends */
-    while (fgets(client_message, MAX_MSG_LENGTH, client) != NULL) {
+    while (fgets(client_message, MAX_MSG_LENGTH, client)) {
+        printf("parser : %d\n", parser(client_message));
+        printf("%s\n", client_message);
         if (fprintf(client, server_message, client_message) < 0) {
             perror("fprintf");
             return -1;
         }
     }
-    free(client_message);
+    fclose(client);
 
     exit(0);
 }
