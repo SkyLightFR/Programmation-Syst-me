@@ -11,17 +11,18 @@
 
 int client_treatment(int client_socket) {
     int welcome_fd;
-    int recv_len;
+    FILE *client = fdopen(client_socket, "w+");
     struct stat welcome_stat;
     char welcome_msg[1500];
     char *client_message = malloc(MAX_MSG_LENGTH);
     const char *welcomeerr = "Could not read welcome file\n";
+    const char *server_message = "<TTS-SERVER> %s";
 
     /* Fetch content of resource/welcome_message and print it */
     welcome_fd = open("resource/welcome_message", O_RDONLY);
     if (welcome_fd == -1) {
         perror("read resource/welcome_message");
-        write(client_socket, welcomeerr, strlen(welcomeerr));
+        fprintf(client, server_message, welcomeerr);
     } else {
         if (fstat(welcome_fd, &welcome_stat) == -1) {
             perror("fstat");
@@ -33,15 +34,15 @@ int client_treatment(int client_socket) {
 
         close(welcome_fd);
 
-        if (write(client_socket, welcome_msg, strlen(welcome_msg)) == -1) {
+        if (fprintf(client, welcome_msg) == -1) {
             perror("write welcome_message");
         }
     }
 
     /* Echo everything the client sends */
-    while ((recv_len = recv(client_socket, client_message, MAX_MSG_LENGTH, 0)) > 0) {
-        if (send(client_socket, client_message, recv_len, 0) < 0) {
-            perror("send");
+    while (fgets(client_message, MAX_MSG_LENGTH, client) != NULL) {
+        if (fprintf(client, server_message, client_message) < 0) {
+            perror("fprintf");
             return -1;
         }
     }
