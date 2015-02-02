@@ -1,10 +1,6 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-#include <fcntl.h>
 #include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include "http.h"
 
@@ -17,7 +13,7 @@ int client_treatment(int client_socket) {
 
     /* Echo everything the client sends */
     while (fgets(client_message, MAX_MSG_LENGTH, client)) {
-        printf("%s\n", client_message);
+        printf("parser = %d\n", method_parser(client_message));
         if (fprintf(client, server_message, client_message) < 0) {
             perror("fprintf");
             return -1;

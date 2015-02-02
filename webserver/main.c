@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include "socket.h"
 #include "client.h"
+#include "http.h"
 
 int main(int argc, char **argv) {
     int port;
@@ -20,6 +20,7 @@ int main(int argc, char **argv) {
         return -1;
     }
 
+    /* Create socket and start listening */
     int server_socket = create_server(port);
     if (server_socket == -1) {
         printf("%s : unable to start : failed to create server socket\n", argv[0]);
@@ -27,6 +28,11 @@ int main(int argc, char **argv) {
     }
 
     signal_init();
+
+    if (compile_regex()) {
+        printf("%s : unable to start : failed to compile method regex\n", argv[0]);
+        return -1;
+    }
 
     while (1) {
         create_client_socket(server_socket);
