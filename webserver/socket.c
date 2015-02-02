@@ -48,7 +48,7 @@ int create_server(int port) {
 
 void signal_treatment(int sig) {
     if (sig == SIGCHLD) {
-        if (waitpid(-1, NULL, 0) == -1) {
+        if (waitpid(-1, NULL, WNOHANG) == -1) {
             perror("waitpid");
         }
     }

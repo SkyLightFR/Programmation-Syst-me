@@ -52,16 +52,17 @@ int client_treatment(int client_socket) {
 
 int create_client_socket(int server_socket) {
     int client_socket;
+    int pid;
     client_socket = accept(server_socket, NULL, NULL);
     if (client_socket == -1) {
         perror("accept");
         return -1;
     }
 
-    if (fork() == -1) {
+    if ((pid = fork()) == -1) {
         perror("fork");
         return -1;
-    } else if (fork() == 0) {
+    } else if (pid == 0) {
         sleep(1);
         if (client_treatment(client_socket) == -1) {
             printf("Could not start client treatment");
