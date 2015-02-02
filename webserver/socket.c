@@ -1,12 +1,6 @@
-#include <sys/types.h>
 #include <sys/wait.h>
-#include <sys/socket.h>
 #include <arpa/inet.h>
 #include <stdio.h>
-#include <errno.h>
-#include <string.h>
-#include <unistd.h>
-#include <signal.h>
 
 int create_server(int port) {
     int server_socket;
@@ -48,9 +42,12 @@ int create_server(int port) {
 
 void signal_treatment(int sig) {
     if (sig == SIGCHLD) {
-        if (waitpid(-1, NULL, WNOHANG) == -1) {
+        int status;
+        if (waitpid(-1, &status, WNOHANG) == -1) {
             perror("waitpid");
         }
+        if (WIFSIGNALED(status))
+            printf("killed by %d\n", WTERMSIG(status));
     }
 }
 
