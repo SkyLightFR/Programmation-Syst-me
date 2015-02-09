@@ -10,9 +10,9 @@
 int client_treatment(int client_socket) {
     FILE *client = fdopen(client_socket, "w+");
     char client_message[MAX_MSG_LENGTH];
-    char full_message[1200];
     int recv_line = 0;
     const char *error_400 = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-length: 17\r\n\r\n400 Bad requet\r\n";
+    const char *success_200 = "HTTP/1.1 200 OK\r\nConnection: close\r\nContent-length: 20\r\n\r\n200 Request received\r\n";
 
     /* Echo everything the client sends */
     while (fgets(client_message, MAX_MSG_LENGTH, client)) {
@@ -26,7 +26,7 @@ int client_treatment(int client_socket) {
         if (!strcmp(client_message, "\r\n") || !strcmp(client_message, "\n")) break;
     }
 
-    printf("message =\n%s\n", full_message);
+    fprintf(client, success_200);
     fclose(client);
 
     exit(0);
