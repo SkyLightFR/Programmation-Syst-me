@@ -10,6 +10,13 @@
 
 #define MAX_MSG_LENGTH 255
 
+char *fgets_or_exit(char *buffer, int size, FILE *stream) {
+    if (!fgets(buffer, size, stream))
+        exit(0);
+
+    return "";
+}
+
 int client_treatment(int client_socket) {
     FILE *client = fdopen(client_socket, "w+");
     char client_message[MAX_MSG_LENGTH];
@@ -25,7 +32,7 @@ int client_treatment(int client_socket) {
     const char *response_ok = "HTTP/1.1 200 OK\r\nConnection: close\r\nContent-length: %d\r\n\r\n%s\r\n";
 
     /* Fetch everything the client sends until \r\n or \n */
-    while (fgets(client_message, MAX_MSG_LENGTH, client)) {
+    while (fgets_or_exit(client_message, MAX_MSG_LENGTH, client)) {
         if (recv_line == 0) {
             parser = method_parser(client_message);
             ++recv_line;
