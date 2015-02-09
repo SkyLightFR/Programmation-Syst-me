@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <sys/socket.h>
 #include "http.h"
 
@@ -9,16 +10,23 @@
 int client_treatment(int client_socket) {
     FILE *client = fdopen(client_socket, "w+");
     char client_message[MAX_MSG_LENGTH];
-    const char *server_message = "<TTS-SERVER> %s";
+    char full_message[1200];
+    int recv_line = 0;
+    const char *error_400 = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-length: 17\r\n\r\n400 Bad requet\r\n";
 
     /* Echo everything the client sends */
     while (fgets(client_message, MAX_MSG_LENGTH, client)) {
-        printf("parser = %d\n", method_parser(client_message));
-        if (fprintf(client, server_message, client_message) < 0) {
-            perror("fprintf");
-            return -1;
+        if (recv_line == 0) {
+            ++recv_line;
+            if (method_parser(client_message) < 0) {
+                fprintf(client, error_400);
+                break;
+            }
         }
+        if (!strcmp(client_message, "\r\n") || !strcmp(client_message, "\n")) break;
     }
+
+    printf("message =\n%s\n", full_message);
     fclose(client);
 
     exit(0);
