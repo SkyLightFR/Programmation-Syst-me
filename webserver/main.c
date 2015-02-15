@@ -1,18 +1,36 @@
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "socket.h"
 #include "client.h"
 #include "http.h"
+#include "filehandling.h"
 
 int main(int argc, char **argv) {
     int port;
-    const char *paramerr = " : invalid parameters\nusage : TTS-Server <listen_port>\n";
+    int root_fd = -1;
+
+    const char *paramerr = " : invalid parameters\nusage : TTS-Server [-d root_dir] <listen_port>\n";
+    const char *direrr = "TTS-Server : invalid root directory";
 
     /* Check parameters */
-    if (argc == 2) {
-        port = atoi(argv[1]);
+    if (argc >= 2) {
+        port = atoi(argv[argc-1]);
 
         if (port < 0 || port > 65535) {
+            printf("%s%s", argv[0], paramerr);
+            return -1;
+        }
+
+        if (argc == 4) {
+            if (!strcmp(argv[1], "-d")) {
+                if ((root_fd = get_dir_fd(argv[2])) == -1) {
+                    perror(direrr);
+                    return -1;
+                }
+            }
+
+        } else if (argc == 3 || argc > 4) {
             printf("%s%s", argv[0], paramerr);
             return -1;
         }
@@ -34,7 +52,7 @@ int main(int argc, char **argv) {
 
     /* Wait for connections forever */
     while (1) {
-        create_client_socket(server_socket);
+        create_client_socket(server_socket, root_fd);
     }
 
     return 0;

@@ -7,12 +7,18 @@
 #include <errno.h>
 #include "filehandling.h"
 
-/* Returns a file descriptor for the requested file */
-int open_file(char *url) {
-    /* Reset errno to check its value after an error from open() (if any) */
-    errno = 0;
+/* Returns a file descriptor for a readable directory */
+int get_dir_fd(char *path) {
+    return open(path, O_RDONLY | O_DIRECTORY);
+}
 
-    return open(url, O_RDONLY);
+/* Returns a file descriptor for the requested file */
+int open_file(int root_fd, char *url) {
+    /* root_fd is useless at the moment */
+    if (root_fd < 0)
+        return open(url, O_RDONLY);
+    else
+        return open(url, O_RDONLY);
 }
 
 int get_file_content(int fd, void *file_content) {
