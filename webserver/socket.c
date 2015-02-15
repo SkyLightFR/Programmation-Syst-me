@@ -6,22 +6,19 @@ int create_server(int port) {
     int server_socket;
 
     /* Creation of the Socket */
-
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (server_socket == -1) {
         perror("socket");
     }
 
     /* Enable SO_REUSEADDR */
-    
     int optval = 1;
 
-    if(setsockopt(server_socket,SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) == -1) {
+    if (setsockopt(server_socket,SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) == -1) {
       perror("Can not set SO_REUSEADR option");
     }
     
-    /* Binding Socket */
-
+    /* Bind Socket */
     struct sockaddr_in saddr;
     saddr.sin_family = AF_INET;
     saddr.sin_port = htons(port);
@@ -32,7 +29,6 @@ int create_server(int port) {
     }
 
     /* Enable listening */
-
     if (listen(server_socket, 10) == -1) {
         perror("listen server socket");
     }
@@ -51,6 +47,7 @@ void signal_treatment(int sig) {
     }
 }
 
+/* Set which signals the program has to compute differently */
 void signal_init(void) {
     if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
         perror("signal");

@@ -11,14 +11,17 @@ int main(int argc, char **argv) {
     /* Check parameters */
     if (argc == 2) {
         port = atoi(argv[1]);
+
         if (port < 0 || port > 65535) {
             printf("%s%s", argv[0], paramerr);
             return -1;
         }
+
     } else {
         printf("%s%s", argv[0], paramerr);
         return -1;
     }
+
 
     /* Create socket and start listening */
     int server_socket = create_server(port);
@@ -29,11 +32,7 @@ int main(int argc, char **argv) {
 
     signal_init();
 
-    if (compile_regex()) {
-        printf("%s : unable to start : failed to compile method regex\n", argv[0]);
-        return -1;
-    }
-
+    /* Wait for connections forever */
     while (1) {
         create_client_socket(server_socket);
     }
