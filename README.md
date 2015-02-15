@@ -10,10 +10,11 @@ USAGE
 Simply run *make* in the root directory.
 
 ### How to run
-    $ ./TTS-Server <listen-port>
+    $ ./TTS-Server [-d root-directory] <listen-port>
 *listen-port* can be any number between 0 and 65535.
+*root-directory* must be a readable directory. The path can be either absolute or relative to the execution directory. NOTE : this option isn't implemented yet, it will be ignored if provided.
 
-At the moment, the only working feature is the treatment of GET requests. When a HTTP client asks for the */* resource, TTS Server will respond with a valid HTTP header and the content of the file located in resource/welcome_message (this path is currently hard-coded).
+At the moment, the only working feature is the treatment of GET requests. When an HTTP client asks for any resource within the filesystem (currently relative to the execution directory), TTS Server will respond with a valid HTTP status, a Content-Length header and the content of the requested file.
 
 NOTICE
 -----------
