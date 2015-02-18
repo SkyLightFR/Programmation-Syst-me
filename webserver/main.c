@@ -8,10 +8,8 @@
 
 int main(int argc, char **argv) {
     int port;
-    int root_fd = -1;
 
     const char *paramerr = " : invalid parameters\nusage : TTS-Server [-d root_dir] <listen_port>\n";
-    const char *direrr = "TTS-Server : invalid root directory";
 
     /* Check parameters */
     if (argc >= 2) {
@@ -23,11 +21,9 @@ int main(int argc, char **argv) {
         }
 
         if (argc == 4) {
-            if (!strcmp(argv[1], "-d")) {
-                if ((root_fd = get_dir_fd(argv[2])) == -1) {
-                    perror(direrr);
-                    return -1;
-                }
+            if (strcmp(argv[1], "-d")) {
+                printf("%s%s", argv[0], paramerr);
+                return -1;
             }
 
         } else if (argc == 3 || argc > 4) {
@@ -52,7 +48,7 @@ int main(int argc, char **argv) {
 
     /* Wait for connections forever */
     while (1) {
-        create_client_socket(server_socket, root_fd);
+        create_client_socket(server_socket, argv[2]);
     }
 
     return 0;

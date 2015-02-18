@@ -8,7 +8,7 @@
 #include "response.h"
 #include "filehandling.h"
 
-int client_treatment(int client_socket, int root_fd) {
+int client_treatment(int client_socket, char *document_root) {
     FILE *client = fdopen(client_socket, "w+");
     char client_message[MAX_MSG_LENGTH];
     http_request request;
@@ -32,7 +32,7 @@ int client_treatment(int client_socket, int root_fd) {
     else if (request.major_version == -1 || request.minor_version == -1)
         send_response(client, 505, "HTTP Version Not Supported", "HTTP version not supported\r\n");
 
-    else if ((url_fd = open_file(root_fd, request.url)) == -1) {
+    else if ((url_fd = check_and_open(request.url, document_root)) == -1) {
         if (errno == ENOENT)
             send_response(client, 404, "Not Found", "Not found\r\n");
         else if (errno == EACCES)
@@ -51,7 +51,7 @@ int client_treatment(int client_socket, int root_fd) {
     exit(0);
 }
 
-int create_client_socket(int server_socket, int root_fd) {
+int create_client_socket(int server_socket, char *document_root) {
     int client_socket;
     int pid;
 
@@ -69,7 +69,7 @@ int create_client_socket(int server_socket, int root_fd) {
 
     } else if (pid == 0) {
         sleep(1);
-        if (client_treatment(client_socket, root_fd) == -1) {
+        if (client_treatment(client_socket, document_root) == -1) {
             printf("Could not start client treatment");
         }
     }

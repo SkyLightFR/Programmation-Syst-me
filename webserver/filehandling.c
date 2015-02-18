@@ -1,14 +1,11 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <errno.h>
 #include "filehandling.h"
 
 /* Returns a file descriptor for a readable directory */
-int get_dir_fd(char *path) {
+int get_dir_fd(const char *path) {
     return open(path, O_RDONLY | O_DIRECTORY);
 }
 
@@ -19,6 +16,20 @@ int open_file(int root_fd, char *url) {
         return open(url, O_RDONLY);
     else
         return open(url, O_RDONLY);
+}
+
+/* Returns a file descriptor to a readable file */
+int check_and_open(char *url, const char *document_root) {
+    int dir_fd;
+    int fd;
+
+    if ((dir_fd = get_dir_fd(document_root)) == -1)
+        return -1;
+
+    if ((fd = openat(dir_fd, url, 0)) == -1)
+        return -1;
+
+    return fd;
 }
 
 int get_file_content(int fd, void *file_content) {
