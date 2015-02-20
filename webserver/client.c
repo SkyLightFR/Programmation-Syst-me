@@ -47,6 +47,7 @@ int client_treatment(int client_socket, char *document_root) {
     } else
         send_response(client, 200, "OK", file_content);
 
+    close(url_fd);
     fclose(client);
     exit(0);
 }

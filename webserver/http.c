@@ -4,8 +4,6 @@
 #include "http.h"
 #include "url.h"
 
-char *rewrite_url(char *url);
-
 /* Fills *request according to *request_line */
 int parse_http_request(const char *request_line, http_request *request) {
     char rq_method[7];
@@ -13,10 +11,13 @@ int parse_http_request(const char *request_line, http_request *request) {
     char rq_version[8];
     char devnull;
 
+    int rescode = 0;
+
     /* request_line must contain three non-empty strings */
     if (sscanf(request_line, "%s %s %s %c", rq_method, rq_url, rq_version, &devnull) != 3) return -1;
 
-    request->url = rewrite_url(rq_url);
+    if ((request->url = rewrite_url(rq_url)) == NULL)
+        rescode = -1;
 
     if (!strcmp(rq_method, "GET")) request->method = HTTP_GET;
     else request->method = HTTP_UNSUPPORTED;
@@ -34,7 +35,7 @@ int parse_http_request(const char *request_line, http_request *request) {
         request->minor_version=-1;
     }
 
-    return 0;
+    return rescode;
 }
 
 /* Ignores the headers in the client request */

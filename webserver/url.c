@@ -1,32 +1,28 @@
 #include <string.h>
+#include <strings.h>
 
-/* Removes the query part of the URL */
+/* Analyzes and returns the URL in a valid format or NULL */
 char *rewrite_url(char *url) {
-    char formatted_url[2000];
-    unsigned int i;
+    int length = strlen(url);
+    char *pos = "";
 
-    /* Keep only one '/' at the beginning of the URL */
-    for (i = 1 ; i < strlen(url) && url[i] == '/' ; ++i);
-    if (i > 1) {
-        strncpy(&formatted_url[1], &url[i], strlen(url));
-        strcpy(url, formatted_url);
-    } else
-        strcpy(url, &url[1]);
+    printf("url = %s\n", url);
+    /* Do nothing if URL is empty or not absolute or contains "/.." or "//" */
+    if (length < 1 || url[0] != '/' || strstr(url, "/..") || strstr(url, "//"))
+        return NULL;
 
-    /* Delete every occurence of ../ at the beginning of the URL */
-    i = 1;
-    while (!strncmp(&url[i], "../", 3))
-        i+=3;
-    if (!strncmp(&url[i], "..", 2))
-        i+=2;
-    strcat(&formatted_url[1], &url[i]);
+    /* Remove '/' at the beginning of the URL */
+    url = &url[1];
 
-    /* Remove everything after the '?' symbol */
-    for (i = 0 ; i < strlen(url) && url[i] != '?' ; ++i);
-    if (i != strlen(url)) {
-        strncpy(formatted_url, url, i);
-        strcpy(url, formatted_url);
-    }
+    /* Ignore everything starting at the '?' character */
+    if ((pos = index(url, '?'))  != NULL)
+        *pos = '\0';
+
+    length = strlen(url);
+
+    /* Remove '/' at the end of the URL */
+    if (url[length] == '/')
+        url[length] = '\0';
 
     return url;
 }
