@@ -9,25 +9,22 @@ int get_dir_fd(const char *path) {
     return open(path, O_RDONLY | O_DIRECTORY);
 }
 
-/* Returns a file descriptor for the requested file */
-int open_file(int root_fd, char *url) {
-    /* root_fd is useless at the moment */
-    if (root_fd < 0)
-        return open(url, O_RDONLY);
-    else
-        return open(url, O_RDONLY);
-}
-
 /* Returns a file descriptor to a readable file */
 int check_and_open(char *url, const char *document_root) {
     int dir_fd;
     int fd;
 
-    if ((dir_fd = get_dir_fd(document_root)) == -1)
-        return -1;
+    if (document_root != NULL) {
+        if ((dir_fd = get_dir_fd(document_root)) == -1)
+            return -1;
 
-    if ((fd = openat(dir_fd, url, 0)) == -1)
-        return -1;
+        if ((fd = openat(dir_fd, url, 0)) == -1)
+            return -1;
+
+    } else {
+        if ((fd = open(url, O_RDONLY)) == -1)
+            return -1;
+    }
 
     return fd;
 }

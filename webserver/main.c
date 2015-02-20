@@ -36,6 +36,10 @@ int main(int argc, char **argv) {
         return -1;
     }
 
+    if (get_dir_fd(argv[2]) == -1) {
+        perror("TTS-Server : root directory");
+        return -1;
+    }
 
     /* Create socket and start listening */
     int server_socket = create_server(port);
