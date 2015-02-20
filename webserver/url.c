@@ -6,7 +6,6 @@ char *rewrite_url(char *url) {
     int length = strlen(url);
     char *pos = "";
 
-    printf("url = %s\n", url);
     /* Do nothing if URL is empty or not absolute or contains "/.." or "//" */
     if (length < 1 || url[0] != '/' || strstr(url, "/..") || strstr(url, "//"))
         return NULL;

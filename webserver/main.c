@@ -26,6 +26,12 @@ int main(int argc, char **argv) {
                 return -1;
             }
 
+            if (get_dir_fd(argv[2]) == -1) {
+                perror("TTS-Server : root directory");
+                return -1;
+            }
+
+
         } else if (argc == 3 || argc > 4) {
             printf("%s%s", argv[0], paramerr);
             return -1;
@@ -33,11 +39,6 @@ int main(int argc, char **argv) {
 
     } else {
         printf("%s%s", argv[0], paramerr);
-        return -1;
-    }
-
-    if (get_dir_fd(argv[2]) == -1) {
-        perror("TTS-Server : root directory");
         return -1;
     }
 
