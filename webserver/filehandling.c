@@ -13,6 +13,7 @@ int get_dir_fd(const char *path) {
 int check_and_open(char *url, const char *document_root) {
     int dir_fd;
     int fd;
+    struct stat file_stat;
 
     if (document_root != NULL) {
         if ((dir_fd = get_dir_fd(document_root)) == -1)
@@ -26,26 +27,33 @@ int check_and_open(char *url, const char *document_root) {
             return -1;
     }
 
+    if (fstat(fd, &file_stat) == -1)
+        return -1;
+
+    if (!S_ISREG(file_stat.st_mode))
+        return -1;
+
     return fd;
 }
 
-int get_file_content(int fd, void *file_content) {
+int get_file_size(int fd) {
     struct stat file_stat;
 
     if (fstat(fd, &file_stat) == -1)
         return EFSTAT;
 
-    /* The resource to serve must be a regular file */
-    if (!S_ISREG(file_stat.st_mode))
-        return ENOTAFILE;
+    return file_stat.st_size;
+}
 
-    file_content = realloc(file_content, file_stat.st_size);
+int copy(int in, int out) {
+    const int buf_len = 4096;
+    char buf[buf_len];
+    int read_len;
 
-    /* Put the content of the file in *file_content */
-    if (read(fd, file_content, file_stat.st_size) == -1)
-        return EREAD;
-
-    close(fd);
+    while ((read_len = read(in, buf, buf_len)) > 0) {
+        if (write(out, buf, read_len) == -1)
+            return -1;
+    }
 
     return 0;
 }

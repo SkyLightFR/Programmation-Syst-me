@@ -13,9 +13,8 @@ int client_treatment(int client_socket, char *document_root) {
     char client_message[MAX_MSG_LENGTH];
     http_request request;
     int errval;
-
     int url_fd;
-    char *file_content = malloc(1);
+
 
     /* Fetch everything the client sends until \r\n or \n */
     fgets_or_exit(client_message, MAX_MSG_LENGTH, client);
@@ -33,19 +32,13 @@ int client_treatment(int client_socket, char *document_root) {
         send_response(client, 505, "HTTP Version Not Supported", "HTTP version not supported\r\n");
 
     else if ((url_fd = check_and_open(request.url, document_root)) == -1) {
-        if (errno == ENOENT)
-            send_response(client, 404, "Not Found", "Not found\r\n");
-        else if (errno == EACCES)
+        if (errno == EACCES)
             send_response(client, 403, "Forbidden", "Forbidden\r\n");
-
-    } else if ((errval = get_file_content(url_fd, file_content)) < 0) {
-        if (errval == EFSTAT || errval == EREAD)
-            send_response(client, 500, "Internal Server Error", "Internal server error\r\n");
-        else if (errval == ENOTAFILE)
+        else
             send_response(client, 404, "Not Found", "Not found\r\n");
 
     } else
-        send_response(client, 200, "OK", file_content);
+        send_response_fd(client, url_fd, 200, "OK");
 
     close(url_fd);
     fclose(client);
