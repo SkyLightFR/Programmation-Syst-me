@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -29,6 +30,9 @@ int client_treatment(int client_socket, char *document_root) {
 
     else if (request.major_version == -1 || request.minor_version == -1)
         send_response(client, 505, "HTTP Version Not Supported", "HTTP version not supported\r\n");
+
+    else if (!strcmp(request.url, "stats"))
+        send_stats(client);
 
     else if ((url_fd = check_and_open(request.url, document_root)) < 0) {
         if (url_fd == EROOTD)

@@ -27,3 +27,13 @@ void send_response_file(FILE *client, int fd, char *path, int code, const char *
     if (copy(fd, fileno(client)) < 0)
         exit(-1);
 }
+
+void send_stats(FILE *client) {
+    const char *TMP_STATS = "Réponse temporaire";
+
+    send_status(client, 200, "OK");
+    if (fprintf(client, "Connection: close\r\nContent-Length: %ld\r\nContent-Type: text/plain\r\n\r\n%s\n", strlen(TMP_STATS), TMP_STATS) < 0)
+        exit(-1);
+
+    fflush(client);
+}
