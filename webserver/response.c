@@ -12,7 +12,7 @@ void send_status(FILE *client, int code, const char *reason_phrase) {
 /* Sends the full response */
 void send_response(FILE *client, int code, const char *reason_phrase, const char *message_body) {
     send_status(client, code, reason_phrase);
-    if (fprintf(client, "Connection: close\r\nContent-Length: %ld\r\n\r\n%s", strlen(message_body), message_body) < 0)
+    if (fprintf(client, "Connection: close\r\nContent-Length: %ld\r\nContent-Type: text/plain\r\n\r\n%s", strlen(message_body), message_body) < 0)
         exit(-1);
 }
 
