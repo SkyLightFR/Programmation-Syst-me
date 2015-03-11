@@ -17,8 +17,9 @@ int client_treatment(int client_socket, char *document_root) {
     int url_fd;
     web_stats *stats = get_stats();
 
-    /* Fetch everything the client sends until \r\n or \n */
     ++stats->served_connections;
+
+    /* Fetch everything the client sends until \r\n or \n */
     fgets_or_exit(client_message, MAX_MSG_LENGTH, client);
     errval = parse_http_request(client_message, &request);
     skip_headers(client);
@@ -53,7 +54,6 @@ int client_treatment(int client_socket, char *document_root) {
         send_response_file(client, url_fd, request.url, 200, "OK");
         ++stats->ok_200;
     }
-    printf("conn %d req %d 400 %d 403 %d 404 %d 200 %d\n", stats->served_connections, stats->served_requests, stats->ko_400, stats->ko_403, stats->ko_404, stats->ok_200);
 
     ++stats->served_requests;
     close(url_fd);

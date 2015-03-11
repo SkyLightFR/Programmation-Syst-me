@@ -5,6 +5,7 @@
 #include "client.h"
 #include "http.h"
 #include "filehandling.h"
+#include "stats.h"
 
 int main(int argc, char **argv) {
     int port;
@@ -48,6 +49,8 @@ int main(int argc, char **argv) {
         printf("%s : unable to start : failed to create server socket\n", argv[0]);
         return -1;
     }
+
+    init_stats();
 
     signal_init();
 
