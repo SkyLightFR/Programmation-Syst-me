@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -31,14 +30,14 @@ int client_treatment(int client_socket, char *document_root) {
     else if (request.major_version == -1 || request.minor_version == -1)
         send_response(client, 505, "HTTP Version Not Supported", "HTTP version not supported\r\n");
 
-    else if ((url_fd = check_and_open(request.url, document_root)) == -1) {
-        if (errno == EACCES)
+    else if ((url_fd = check_and_open(request.url, document_root)) < 0) {
+        if (url_fd == EROOTD)
             send_response(client, 403, "Forbidden", "Forbidden\r\n");
         else
             send_response(client, 404, "Not Found", "Not found\r\n");
 
     } else
-        send_response_fd(client, url_fd, 200, "OK");
+        send_response_file(client, url_fd, request.url, 200, "OK");
 
     close(url_fd);
     fclose(client);

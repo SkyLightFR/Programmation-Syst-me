@@ -1,5 +1,4 @@
 #include <string.h>
-#include <strings.h>
 
 /* Analyzes and returns the URL in a valid format or NULL */
 char *rewrite_url(char *url) {
@@ -7,8 +6,12 @@ char *rewrite_url(char *url) {
     char *pos = "";
 
     /* Do nothing if URL is empty or not absolute or contains "/.." or "//" */
-    if (length < 1 || url[0] != '/' || strstr(url, "/..") || strstr(url, "//"))
+    if (length < 1 || url[0] != '/')
         return NULL;
+
+    /* Send /index.html when URL is / */
+    if (length == 1)
+        return "index.html";
 
     /* Remove '/' at the beginning of the URL */
     url = &url[1];
