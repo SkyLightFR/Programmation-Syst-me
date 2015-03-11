@@ -6,6 +6,7 @@
 #include "acquire.h"
 #include "http.h"
 #include "response.h"
+#include "stats.h"
 #include "filehandling.h"
 
 int client_treatment(int client_socket, char *document_root) {
@@ -14,16 +15,19 @@ int client_treatment(int client_socket, char *document_root) {
     http_request request;
     int errval;
     int url_fd;
-
+    web_stats *stats = get_stats();
 
     /* Fetch everything the client sends until \r\n or \n */
+    ++stats->served_connections;
     fgets_or_exit(client_message, MAX_MSG_LENGTH, client);
     errval = parse_http_request(client_message, &request);
     skip_headers(client);
 
     /* Send response according to request state */
-    if (errval < 0)
+    if (errval < 0) {
         send_response(client, 400, "Bad Request", "Bad request\r\n");
+        ++stats->ko_400;
+    }
 
     else if (request.method == HTTP_UNSUPPORTED)
         send_response(client, 405, "Method Not Allowed", "Method not allowed\r\n");
@@ -31,18 +35,27 @@ int client_treatment(int client_socket, char *document_root) {
     else if (request.major_version == -1 || request.minor_version == -1)
         send_response(client, 505, "HTTP Version Not Supported", "HTTP version not supported\r\n");
 
-    else if (!strcmp(request.url, "stats"))
+    else if (!strcmp(request.url, "stats")) {
         send_stats(client);
+        ++stats->ok_200;
+    }
 
     else if ((url_fd = check_and_open(request.url, document_root)) < 0) {
-        if (url_fd == EROOTD)
+        if (url_fd == EROOTD) {
             send_response(client, 403, "Forbidden", "Forbidden\r\n");
-        else
+            ++stats->ko_403;
+        } else {
             send_response(client, 404, "Not Found", "Not found\r\n");
+            ++stats->ko_404;
+        }
 
-    } else
+    } else {
         send_response_file(client, url_fd, request.url, 200, "OK");
+        ++stats->ok_200;
+    }
+    printf("conn %d req %d 400 %d 403 %d 404 %d 200 %d\n", stats->served_connections, stats->served_requests, stats->ko_400, stats->ko_403, stats->ko_404, stats->ok_200);
 
+    ++stats->served_requests;
     close(url_fd);
     fclose(client);
     exit(0);
