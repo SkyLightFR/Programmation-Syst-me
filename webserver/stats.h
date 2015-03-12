@@ -1,4 +1,8 @@
+#ifndef __STATS_H__
+#define __STATS_H__
+
 #include <semaphore.h>
+
 #define CON 1
 #define REQ 2
 #define OK 3
@@ -23,3 +27,5 @@ typedef struct {
 int init_stats(void);
 int update_stats(int field);
 web_stats *get_stats(void);
+
+#endif

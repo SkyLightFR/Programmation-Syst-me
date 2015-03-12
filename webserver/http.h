@@ -1,3 +1,6 @@
+#ifndef __HTTP_H__
+#define __HTTP_H__
+
 #define MAX_MSG_LENGTH 200
 
 enum http_method {
@@ -16,3 +19,5 @@ typedef struct
 int parse_http_request(const char *request_line, http_request *request);
 void skip_headers(FILE *client);
 int compile_regex(void);
+
+#endif
