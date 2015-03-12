@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -42,7 +43,7 @@ int client_treatment(int client_socket, char *document_root) {
     }
 
     else if ((url_fd = check_and_open(request.url, document_root)) < 0) {
-        if (url_fd == EROOTD) {
+        if (url_fd == EROOTD || errno == EACCES) {
             send_response(client, 403, "Forbidden", "Forbidden\r\n");
             ++stats->ko_403;
         } else {
