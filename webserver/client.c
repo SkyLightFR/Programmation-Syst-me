@@ -16,9 +16,8 @@ int client_treatment(int client_socket, char *document_root) {
     http_request request;
     int errval;
     int url_fd;
-    web_stats *stats = get_stats();
 
-    ++stats->served_connections;
+    update_stats(CON);
 
     /* Fetch everything the client sends until \r\n or \n */
     fgets_or_exit(client_message, MAX_MSG_LENGTH, client);
@@ -28,35 +27,40 @@ int client_treatment(int client_socket, char *document_root) {
     /* Send response according to request state */
     if (errval < 0) {
         send_response(client, 400, "Bad Request", "Bad request\r\n");
-        ++stats->ko_400;
+        update_stats(BADREQ);
     }
 
-    else if (request.method == HTTP_UNSUPPORTED)
+    else if (request.method == HTTP_UNSUPPORTED) {
         send_response(client, 405, "Method Not Allowed", "Method not allowed\r\n");
+        update_stats(METHD);
+    }
 
-    else if (request.major_version == -1 || request.minor_version == -1)
+    else if (request.major_version == -1 || request.minor_version == -1) {
         send_response(client, 505, "HTTP Version Not Supported", "HTTP version not supported\r\n");
+        update_stats(HTTPVERS);
+    }
 
     else if (!strcmp(request.url, "stats")) {
         send_stats(client);
-        ++stats->ok_200;
+        update_stats(OK);
     }
 
     else if ((url_fd = check_and_open(request.url, document_root)) < 0) {
         if (url_fd == EROOTD || errno == EACCES) {
             send_response(client, 403, "Forbidden", "Forbidden\r\n");
-            ++stats->ko_403;
+            update_stats(FORB);
         } else {
             send_response(client, 404, "Not Found", "Not found\r\n");
-            ++stats->ko_404;
+            update_stats(NOTF);
         }
 
     } else {
         send_response_file(client, url_fd, request.url, 200, "OK");
-        ++stats->ok_200;
+        update_stats(OK);
     }
 
-    ++stats->served_requests;
+    update_stats(REQ);
+
     close(url_fd);
     fclose(client);
     exit(0);
