@@ -50,7 +50,8 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    init_stats();
+    if (init_stats() < 0)
+        return -1;
 
     signal_init();
 
