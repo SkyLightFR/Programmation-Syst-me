@@ -2,7 +2,6 @@
 #include <sys/wait.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <sys/select.h>
 #include <stdio.h>
 
 int gen_socket4(const int port ) {
@@ -75,22 +74,9 @@ int gen_socket6(const int port) {
     return server_socket6;
 }
 
-/*
- * TODO: USE SELECT
-*/
-void enable_listening(const int socket) {
-    if (listen(socket, 10) == -1) {
-        perror("listen server socket");
-        exit(-1);
-    }
-}
-
 void create_server(int *sockets, const int port) {
     sockets[0] = gen_socket4(port);
     sockets[1] = gen_socket6(port);
-
-    enable_listening(sockets[0]);
-    enable_listening(sockets[1]);
 }
 
 void signal_treatment(const int sig) {
