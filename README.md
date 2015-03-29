@@ -14,7 +14,9 @@ Simply run *make* in the root directory.
 *listen-port* can be any number between 0 and 65535.
 *root-directory* must be a readable directory. The path can be either absolute or relative to the execution directory.
 
-At the moment, the only working feature is the treatment of GET requests. When an HTTP client asks for any existing accessible resource within the filesystem, TTS Server will respond with a valid HTTP status, a Content-Length header and the content of the requested file.
+At the moment, working features are:
+- Treatment of GET requests. When an HTTP client asks for an existing accessible resource within the filesystem, TTS Server will respond with a valid HTTP status, a header composed of a Content-Length and a Content-Type, and the content of the requested file ;
+- Stats of the status of previous requests and responses. You can view them in an HTML-formatted table at *<yourserver>*/stats.
 
 NOTICE
 -----------
