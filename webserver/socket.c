@@ -4,6 +4,7 @@
 #include <netinet/in.h>
 #include <stdio.h>
 
+/* Creates, binds and returns a listening socket for IPv4 connections */
 int gen_socket4(const int port ) {
     int server_socket4;
 
@@ -35,10 +36,17 @@ int gen_socket4(const int port ) {
         exit(-1);
     }
 
+    if (listen(server_socket4, 10) == -1) {
+        perror("listen IPv4 socket");
+        exit(-1);
+    }
+
 
     return server_socket4;
 }
 
+
+/* Creates, binds and returns a listening socket for IPv6 connections */
 int gen_socket6(const int port) {
     int server_socket6;
 
@@ -54,10 +62,15 @@ int gen_socket6(const int port) {
     int optval = 1;
 
     if (setsockopt(server_socket6, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) == -1) {
-        perror("Can not set SO_REUSEADR option on IPv6 socket");
+        perror("SO_REUSEADR option on IPv6 socket");
         exit(-1);
     }
 
+    /* This is an IPv6-only socket */
+    if (setsockopt(server_socket6, IPPROTO_IPV6, IPV6_V6ONLY, &optval, sizeof(int)) == -1) {
+        perror("IPV6_V6ONLY on IPv6 socket");
+        exit(-1);
+    }
 
     /* Bind IPv6 socket */
     struct sockaddr_in6 saddr6;
@@ -67,6 +80,11 @@ int gen_socket6(const int port) {
 
     if (bind(server_socket6, (struct sockaddr *)&saddr6, sizeof(saddr6)) == -1) {
         perror("bind server IPv6 socket");
+        exit(-1);
+    }
+
+    if (listen(server_socket6, 10) == -1) {
+        perror("listen IPv6 socket");
         exit(-1);
     }
 
