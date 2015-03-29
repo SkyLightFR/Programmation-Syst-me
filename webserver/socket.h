@@ -6,7 +6,7 @@ de la machine sur le port passé en paramètre. La socket retournée
 doit pouvoir être utilisée directement par un appel à accept.
 La fonction retourne -1 en cas d'erreur ou le descripteur de la
 socket créée. */
-int create_server(int port);
+void create_server(int *server_sockets, int port);
 void signal_init(void);
 
 #endif

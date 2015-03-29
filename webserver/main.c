@@ -44,8 +44,10 @@ int main(int argc, char **argv) {
     }
 
     /* Create socket and start listening */
-    int server_socket = create_server(port);
-    if (server_socket == -1) {
+    int sockets[2];
+    create_server(sockets, port);
+
+    if (sockets[0] < 0 || sockets[1] < 0) {
         printf("%s : unable to start : failed to create server socket\n", argv[0]);
         return -1;
     }
@@ -57,7 +59,7 @@ int main(int argc, char **argv) {
 
     /* Wait for connections forever */
     while (1) {
-        create_client_socket(server_socket, argv[2]);
+        create_client_socket(sockets, argv[2]);
     }
 
     return 0;
