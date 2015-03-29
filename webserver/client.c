@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/socket.h>
+#include <sys/select.h>
 #include "acquire.h"
 #include "http.h"
 #include "response.h"
@@ -66,30 +67,48 @@ int client_treatment(int client_socket, char *document_root) {
     exit(0);
 }
 
-int create_client_socket(int server_socket, char *document_root) {
-    int client_socket;
+int create_client_socket(int *sockets, char *document_root) {
+    fd_set fds;
     int pid;
+    int client_socket = -1;
+
+    /* Add the two sockets to the set */
+    FD_ZERO(&fds);
+    FD_SET(sockets[0], &fds);
+    FD_SET(sockets[1], &fds);
 
     /* Wait for connections in the main process */
-    client_socket = accept(server_socket, NULL, NULL);
-    if (client_socket == -1) {
-        perror("accept");
-        return -1;
-    }
-
-    /* Create a forked process to handle each connection */
-    if ((pid = fork()) == -1) {
-        perror("fork");
+    if (select(sockets[1] + 1, &fds, NULL, NULL, NULL) == -1) {
+        perror("select");
         return -1;
 
-    } else if (pid == 0) {
-        sleep(1);
-        if (client_treatment(client_socket, document_root) == -1) {
-            printf("Could not start client treatment");
+    } else {
+        if (FD_ISSET(sockets[0], &fds))
+            client_socket = accept(sockets[0], NULL, NULL);
+        else if (FD_ISSET(sockets[1], &fds))
+            client_socket = accept(sockets[1], NULL, NULL);
+        else
+            printf("Why can I even read this?!\n");
+
+        if (client_socket < 0) {
+            perror("accept");
+            return -1;
         }
-    }
 
-    close(client_socket);
+        /* Create a forked process to handle each connection */
+        if ((pid = fork())  == -1) {
+            perror("fork");
+            return -1;
+
+        } else if (pid == 0) {
+            sleep(1);
+            if (client_treatment(client_socket, document_root) == -1) {
+                printf("Could not start client treatment");
+            }
+        }
+
+        close(client_socket);
+    }
 
     return 0;
 }
