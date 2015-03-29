@@ -79,8 +79,10 @@ int create_client_socket(int *sockets, char *document_root) {
 
     /* Wait for connections in the main process */
     if (select(sockets[1] + 1, &fds, NULL, NULL, NULL) == -1) {
-        perror("select");
-        return -1;
+        if (errno != EINTR) {
+            perror("select");
+            return -1;
+        }
 
     } else {
         if (FD_ISSET(sockets[0], &fds))
